@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits } from 'discord.js';
-import { addBirthday } from './functions/discord.js';
+import { addBirthday } from './functions/commands.js';
 
 process.loadEnvFile();
 
