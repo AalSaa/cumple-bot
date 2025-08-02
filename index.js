@@ -1,5 +1,7 @@
-const TOKEN = require('./config.json').token;
-const { Client, GatewayIntentBits } = require('discord.js');
+import { Client, GatewayIntentBits } from 'discord.js';
+import User from './models/user.js';
+import config from './config.json' with { type: 'json' };
+const TOKEN = config.token;
 
 const client = new Client({ 
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] 
@@ -42,7 +44,10 @@ client.on('messageCreate', message => {
     }
 
     const [, day, month, year] = match;
-    message.reply(`Fecha recibida: ${day}/${month}/${year}`);
+    message.reply(`<@${message.author.id}> Fecha recibida: ${day}/${month}/${year}`);
+    const newUser = new User({ id: message.author.id, birthday: new Date(`${year}-${month}-${day}`) });
+
+    console.log(newUser);
 });
 
 

@@ -19,5 +19,6 @@
   "homepage": "https://github.com/AalSaa/cumple-bot#readme",
   "dependencies": {
     "discord.js": "^14.21.0"
-  }
+  },
+  "type": "module"
 }
