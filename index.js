@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits } from 'discord.js';
-import { addBirthday } from './functions/commands.js';
+import { addBirthday, deleteBirthday } from './functions/commands.js';
 
 process.loadEnvFile();
 
@@ -17,6 +17,7 @@ client.on('messageCreate', message => {
     if (message.author.bot) return;
 
     addBirthday(message);
+    deleteBirthday(message);
 });
 
 

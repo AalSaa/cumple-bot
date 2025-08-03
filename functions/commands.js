@@ -1,4 +1,4 @@
-import { userExistsByDiscordId, postUser } from '../database/querys.js';
+import { userExistsByDiscordId, postUser, deleteUserByDiscordId } from '../database/querys.js';
 import User from '../models/user.js';
 
 const numRegex = /\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/;
@@ -51,3 +51,16 @@ export const addBirthday = async (message) => {
     postUser(newUser).catch(console.error);
     message.reply(`<@${message.author.id}> Fecha recibida: ${day}/${month}/${year}`);
 };
+
+export const deleteBirthday = async (message) => {
+    if (!message.content.startsWith('!delCumple')) return;
+
+    if (!(await userExistsByDiscordId(message.author.id))) {
+        message.reply('No tienes una fecha de cumpleaños registrada.');
+        return;
+    }
+
+    await deleteUserByDiscordId(message.author.id).catch(console.error);
+    
+    message.reply(`<@${message.author.id}> Tu fecha de cumpleaños ha sido eliminada.`);
+}
