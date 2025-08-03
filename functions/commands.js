@@ -10,12 +10,14 @@ const months = {
     septiembre: '09', octubre: '10', noviembre: '11', diciembre: '12'
 };
 
+const isValidDate = (day, month, year) => {
+    const date = new Date(`${year}-${month}-${day}`);
+    return date instanceof Date && !isNaN(date);
+}
+
 export const addBirthday = async (message) => {
-    if (await userExistsByDiscordId(message.author.id)) {
-        message.reply('Ya tienes una fecha de cumpleaños registrada.');
-        return;
-    }
-    
+    if (!message.content.startsWith('!addCumple')) return;
+
     if (!(message.content.match(numRegex) || message.content.match(textRegex))) {
         message.reply('Por favor, envía una fecha en el formato correcto: "DD/MM/YYYY" o "DD de Mes de YYYY".');
         return;
@@ -34,7 +36,18 @@ export const addBirthday = async (message) => {
     } else match = message.content.match(numRegex);
 
     const [, day, month, year] = match;
-    message.reply(`<@${message.author.id}> Fecha recibida: ${day}/${month}/${year}`);
+
+    if (!isValidDate(day, month, year)) {
+        message.reply('Fecha inválida. Por favor, verifica el día, mes y año.');
+        return;
+    }
+
+    if (await userExistsByDiscordId(message.author.id)) {
+        message.reply('Ya tienes una fecha de cumpleaños registrada.');
+        return;
+    }
+
     const newUser = new User({ id: message.author.id, birthday: new Date(`${year}-${month}-${day}`) });
     postUser(newUser).catch(console.error);
+    message.reply(`<@${message.author.id}> Fecha recibida: ${day}/${month}/${year}`);
 };
