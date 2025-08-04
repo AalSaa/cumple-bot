@@ -1,5 +1,4 @@
 import { userExistsByDiscordId, postUser, deleteUserByDiscordId } from '../database/querys.js';
-import User from '../models/user.js';
 
 const numRegex = /\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/;
 const textRegex = /\b(\d{1,2})\s+de\s+([a-zA-ZáéíóúÁÉÍÓÚñÑ]+)\s+de\s+(\d{4})\b/;
@@ -47,8 +46,8 @@ export const addBirthday = async (message) => {
         return;
     }
 
-    const newUser = new User({ id: message.author.id, birthday: new Date(`${year}-${month}-${day}`) });
-    postUser(newUser).catch(console.error);
+    await postUser({id: message.author.id, birthday: `${year}-${month}-${day}`}).catch(console.error);
+    
     message.reply(`<@${message.author.id}> Fecha recibida: ${day}/${month}/${year}`);
 };
 
