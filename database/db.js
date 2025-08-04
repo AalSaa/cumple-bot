@@ -1,11 +1,10 @@
-import { Pool } from "pg";
+import Database from 'better-sqlite3';
 
-process.loadEnvFile();
+export const db = new Database('./cumple_bot.db');
 
-export const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-});
+db.prepare(
+    `CREATE TABLE IF NOT EXISTS discord_user (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    discord_id TEXT NOT NULL,
+    birthday DATE NOT NULL)`
+).run();

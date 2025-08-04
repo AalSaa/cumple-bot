@@ -18,9 +18,9 @@
   },
   "homepage": "https://github.com/AalSaa/cumple-bot#readme",
   "dependencies": {
+    "better-sqlite3": "^12.2.0",
     "cron": "^4.3.3",
-    "discord.js": "^14.21.0",
-    "pg": "^8.16.3"
+    "discord.js": "^14.21.0"
   },
   "type": "module"
 }

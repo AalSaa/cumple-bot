@@ -41,12 +41,12 @@ export const addBirthday = async (message) => {
         return;
     }
 
-    if (await userExistsByDiscordId(message.author.id)) {
+    if (userExistsByDiscordId(message.author.id)) {
         message.reply('Ya tienes una fecha de cumpleaños registrada.');
         return;
     }
 
-    await postUser({id: message.author.id, birthday: `${year}-${month}-${day}`}).catch(console.error);
+    postUser({discord_id: message.author.id, birthday: `${year}-${month}-${day}`});
     
     message.reply(`<@${message.author.id}> Fecha recibida: ${day}/${month}/${year}`);
 };
@@ -54,12 +54,12 @@ export const addBirthday = async (message) => {
 export const deleteBirthday = async (message) => {
     if (!message.content.startsWith('!delCumple')) return;
 
-    if (!(await userExistsByDiscordId(message.author.id))) {
+    if (!(userExistsByDiscordId(message.author.id))) {
         message.reply('No tienes una fecha de cumpleaños registrada.');
         return;
     }
 
-    await deleteUserByDiscordId(message.author.id).catch(console.error);
+    deleteUserByDiscordId(message.author.id);
     
     message.reply(`<@${message.author.id}> Tu fecha de cumpleaños ha sido eliminada.`);
 }

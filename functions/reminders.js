@@ -7,7 +7,7 @@ const CHANNEL_ID = process.env.DISCORD_CHANNEL_ID;
 
 export const rememberUserWithBirthdayIsInSevenDays = async (client) => {
     new CronJob('0 0 0 * * *', async () => {
-        const users = await getAllUsersWithBirthdayIsInSevenDays();
+        const users = getAllUsersWithBirthdayIsInSevenDays();
         if (users.length === 0) return;
 
         const channel = await client.channels.fetch(CHANNEL_ID);
@@ -21,7 +21,7 @@ export const rememberUserWithBirthdayIsInSevenDays = async (client) => {
 
 export const rememberUserWithBirthdayIsToday = async (client) => {
     new CronJob('0 0 0 * * *', async () => {
-        const users = await getAllUsersWithBirthdayIsToday();
+        const users = getAllUsersWithBirthdayIsToday();
         if (users.length === 0) return;
 
         const channel = await client.channels.fetch(CHANNEL_ID);

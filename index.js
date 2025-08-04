@@ -1,3 +1,4 @@
+import { db } from './database/db.js';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { rememberUserWithBirthdayIsInSevenDays, rememberUserWithBirthdayIsToday } from './functions/reminders.js';
 import { addBirthday, deleteBirthday } from './functions/commands.js';

@@ -1,46 +1,38 @@
-import { pool } from "./db.js";
+import { db } from "./db.js";
 
-export const getAllUsersWithBirthdayIsInSevenDays = async () => {
-    const query = `
-        SELECT * FROM "discord_user"
-        WHERE TO_CHAR(birthday, 'MM-DD') = TO_CHAR(CURRENT_DATE + INTERVAL '7 days', 'MM-DD');
-    `;
-    const result = await pool.query(query);
-    return result.rows;
+export function getAllUsersWithBirthdayIsInSevenDays() {
+	const stmt = db.prepare(`
+    	SELECT * FROM discord_user
+    	WHERE strftime('%m-%d', birthday) = strftime('%m-%d', date('now', '+7 days'));
+  	`);
+  	return stmt.all();
 }
 
-export const getAllUsersWithBirthdayIsToday = async () => {
-    const query = `
-        SELECT * FROM "discord_user"
-        WHERE TO_CHAR(birthday, 'MM-DD') = TO_CHAR(CURRENT_DATE, 'MM-DD');
-    `;
-    const result = await pool.query(query);
-    return result.rows;
+export function getAllUsersWithBirthdayIsToday() {
+  	const stmt = db.prepare(`
+    	SELECT * FROM discord_user
+  		WHERE strftime('%m-%d', birthday) = strftime('%m-%d', 'now');
+  	`);
+  	return stmt.all();
 }
 
-export const userExistsByDiscordId = async (discordId) => {
-    const query = 'SELECT EXISTS (SELECT 1 FROM "discord_user" WHERE discord_id = $1) AS exists';
-    const values = [discordId];
-    const result = await pool.query(query, values);
-    return result.rows[0].exists;
+export function userExistsByDiscordId(discordId) {
+    const stmt = db.prepare('SELECT EXISTS (SELECT 1 FROM discord_user WHERE discord_id = ?) AS "exists"');
+    return !!stmt.get(discordId).exists;
 }
 
-export const postUser = async (user) => {
-    try {
-        const query = 'INSERT INTO "discord_user" (discord_id, birthday) VALUES ($1, $2)';
-        const values = [user.id, user.birthday];
-        await pool.query(query, values);
-    } catch (error) {
-        console.error('Error al guardar el usuario:', error);
-    }
+export function postUser(user) {
+	try {
+		db.prepare('INSERT INTO discord_user (discord_id, birthday) VALUES (?, ?)').run(user.discord_id, user.birthday);
+	} catch (error) {
+		console.error('Error al guardar el usuario:', error);
+	}
 }
 
-export const deleteUserByDiscordId = async (discordId) => {
-    try {
-        const query = 'DELETE FROM "discord_user" WHERE discord_id = $1';
-        const values = [discordId];
-        await pool.query(query, values);
-    } catch (error) {
-        console.error('Error al eliminar el usuario:', error);
-    }
+export function deleteUserByDiscordId(discordId) {
+	try {
+		db.prepare('DELETE FROM discord_user WHERE discord_id = ?').run(discordId);
+	} catch (error) {
+		console.error('Error al eliminar el usuario:', error);
+	}
 }
