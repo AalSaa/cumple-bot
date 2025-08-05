@@ -1,5 +1,13 @@
 import { db } from "./db.js";
 
+export function getAllUsersOrderByBirthday() {
+	const stmt = db.prepare(`
+		SELECT * FROM discord_user
+		ORDER BY strftime('%m-%d', birthday);
+	`);
+	return stmt.all();
+}
+
 export function getAllUsersWithBirthdayIsInSevenDays() {
 	const stmt = db.prepare(`
     	SELECT * FROM discord_user
@@ -23,7 +31,7 @@ export function userExistsByDiscordId(discordId) {
 
 export function postUser(user) {
 	try {
-		db.prepare('INSERT INTO discord_user (discord_id, birthday) VALUES (?, ?)').run(user.discord_id, user.birthday);
+		db.prepare('INSERT INTO discord_user (discord_id, discord_username, birthday) VALUES (?, ?, ?)').run(user.discord_id, user.discord_username, user.birthday);
 	} catch (error) {
 		console.error('Error al guardar el usuario:', error);
 	}
