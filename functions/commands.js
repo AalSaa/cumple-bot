@@ -21,11 +21,11 @@ const numberOfMonthsToName = {
 };
 
 export const allBirthdays = async (client, message) => {
+    if (message.channel.id !== CHANNEL_ID) return;
+
     if (!message.content.toLowerCase().startsWith('!cumples')) return;
 
     const users = getAllUsersOrderByBirthday();
-
-    const channel = await client.channels.fetch(CHANNEL_ID);
 
     const embed = new EmbedBuilder()
         .setTitle('Todos los Cumpleaños')
@@ -41,7 +41,7 @@ export const allBirthdays = async (client, message) => {
             }
         )
 
-    channel.send({ embeds: [embed] });
+    message.reply({ embeds: [embed] });
 }
 
 const isValidDate = (day, month, year) => {
@@ -50,6 +50,8 @@ const isValidDate = (day, month, year) => {
 }
 
 export const addBirthday = async (message) => {
+    if (message.channel.id !== CHANNEL_ID) return;
+
     if (!message.content.toLowerCase().startsWith('!addcumple')) return;
 
     if (!(message.content.match(numRegex) || message.content.match(textRegex))) {
@@ -83,10 +85,12 @@ export const addBirthday = async (message) => {
 
     postUser({discord_id: message.author.id, discord_username: message.author.globalName, birthday: `${year}-${month}-${day}`});
     
-    message.reply(`<@${message.author.id}> Fecha recibida: ${day}/${month}/${year}`);
+    message.reply(`Se ha guardado tu cumpleaños: ${day}/${month}/${year} 📅`);
 };
 
 export const deleteBirthday = async (message) => {
+    if (message.channel.id !== CHANNEL_ID) return;
+
     if (!message.content.toLowerCase().startsWith('!delcumple')) return;
 
     if (!(userExistsByDiscordId(message.author.id))) {
@@ -96,5 +100,5 @@ export const deleteBirthday = async (message) => {
 
     deleteUserByDiscordId(message.author.id);
     
-    message.reply(`<@${message.author.id}> Tu fecha de cumpleaños ha sido eliminada.`);
+    message.reply(`Tu fecha de cumpleaños ha sido eliminada.`);
 }
