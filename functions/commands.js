@@ -20,7 +20,7 @@ const numberOfMonthsToName = {
     '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre'
 };
 
-export const allBirthdays = async (client, message) => {
+export const allBirthdays = async (message) => {
     if (message.channel.id !== CHANNEL_ID) return;
 
     if (!message.content.toLowerCase().startsWith('!cumples')) return;
