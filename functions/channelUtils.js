@@ -23,8 +23,8 @@ const sendWelcomeMessage = (channel) => {
             {
                 name: '¿Como agregar mi cumpleaños? 🤔',
                 value: 'Puedes agregar tu cumpleaños usando los comandos:\n' +
-                    '- `DD/MM/YYYY`\n' +
-                    '- `DD de Mes de YYYY`'
+                    '- `!addcumple DD/MM/YYYY`\n' +
+                    '- `!addcumple DD de Mes de YYYY`'
             },
             {
                 name: '¿Como eliminar mi cumpleaños? ❌',
