@@ -78,6 +78,11 @@ export const addBirthday = async (message) => {
         return;
     }
 
+    if (!message.author.globalName) {
+        message.reply('No tienes un nombre de usuario global. Por favor, verifica tu configuración de Discord.');
+        return;
+    }
+
     if (userExistsByDiscordId(message.author.id)) {
         message.reply('Ya tienes una fecha de cumpleaños registrada.');
         return;
