@@ -1,4 +1,5 @@
 import { EmbedBuilder } from 'discord.js';
+import { readFileSync } from 'fs';
 import { getAllUsersOrderByBirthday, userExistsByDiscordId, postUser, deleteUserByDiscordId } from '../database/querys.js';
 
 process.loadEnvFile();
@@ -106,4 +107,28 @@ export const deleteBirthday = async (message) => {
     deleteUserByDiscordId(message.author.id);
     
     message.reply(`Tu fecha de cumpleaños ha sido eliminada.`);
+}
+
+export const allHolidays = (message) => {
+    if (message.channel.id !== CHANNEL_ID) return;
+
+    if (!message.content.toLowerCase().startsWith('!feriados')) return;
+
+    const holidays = JSON.parse(readFileSync('holidays.json'));
+    
+    const embed = new EmbedBuilder()
+        .setTitle('Todos los Feriados')
+        .addFields(
+            {
+                name: '',
+                value: holidays.length > 0 ?
+                    holidays.map(holiday => {
+                    const holidayDate = holiday.date.split('-');
+                    return `**${holiday.title}**: ${holidayDate[2]} de ${numberOfMonthsToName[holidayDate[1]]}`;
+                }).join('\n') : 
+                'No hay feriados registrados.'
+            }
+        );
+
+    message.reply({ embeds: [embed] });
 }

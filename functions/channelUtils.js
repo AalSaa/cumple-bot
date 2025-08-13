@@ -34,6 +34,10 @@ const sendWelcomeMessage = (channel) => {
                 name: '¿Como ver todos los cumpleaños? 🎂',
                 value: 'Puedes ver tu cumpleaños y el de los demás usando el comando `!cumples`.'
             },
+            {
+                name: '¿Como ver los feriados? 📅',
+                value: 'Puedes ver los feriados usando el comando `!feriados`.'
+            }
         )
         .setThumbnail('attachment://cake.png')
         .setImage('attachment://penguin.png');
