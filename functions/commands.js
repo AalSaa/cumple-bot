@@ -45,9 +45,63 @@ export const allBirthdays = async (message) => {
     message.reply({ embeds: [embed] });
 }
 
+const UPCOMING_BIRTHDAYS_LIMIT = 5;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+const getTodayInSantiago = () => {
+    const [year, month, day] = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santiago' })
+        .format(new Date()).split('-').map(Number);
+    return Date.UTC(year, month - 1, day);
+}
+
+const formatDaysLeft = (daysLeft) => {
+    if (daysLeft === 0) return '¡hoy! 🎉';
+    if (daysLeft === 1) return 'mañana';
+    return `en ${daysLeft} días`;
+}
+
+export const upcomingBirthdays = (message) => {
+    if (message.channel.id !== CHANNEL_ID) return;
+
+    if (!message.content.toLowerCase().startsWith('!proximos')) return;
+
+    const today = getTodayInSantiago();
+    const currentYear = new Date(today).getUTCFullYear();
+
+    const upcoming = getAllUsersOrderByBirthday()
+        .map(user => {
+            const [birthYear, month, day] = user.birthday.split('-').map(Number);
+            const nextBirthdayYear = Date.UTC(currentYear, month - 1, day) < today ? currentYear + 1 : currentYear;
+            const daysLeft = Math.round((Date.UTC(nextBirthdayYear, month - 1, day) - today) / MS_PER_DAY);
+            return { user, daysLeft, age: nextBirthdayYear - birthYear };
+        })
+        .sort((a, b) => a.daysLeft - b.daysLeft)
+        .slice(0, UPCOMING_BIRTHDAYS_LIMIT);
+
+    const embed = new EmbedBuilder()
+        .setTitle('Próximos Cumpleaños')
+        .addFields(
+            {
+                name: '',
+                value: upcoming.length > 0 ?
+                    upcoming.map(({ user, daysLeft, age }) => {
+                        const birthday = user.birthday.split('-');
+                        const ageText = age > 0 ? ` (cumple ${age} 🎂)` : '';
+                        return `**${user.discord_username}**: ${birthday[2]} de ${numberOfMonthsToName[birthday[1]]} — ${formatDaysLeft(daysLeft)}${ageText}`;
+                    }).join('\n') :
+                    'No hay cumpleaños registrados.'
+            }
+        );
+
+    message.reply({ embeds: [embed] });
+}
+
+// Built in UTC and compared field by field because Date silently rolls invalid days over (31/02 -> 03/03).
 const isValidDate = (day, month, year) => {
-    const date = new Date(`${year}-${month}-${day}`);
-    return date instanceof Date && !isNaN(date);
+    const date = new Date(Date.UTC(year, month - 1, day));
+    return date.getUTCFullYear() === Number(year)
+        && date.getUTCMonth() === month - 1
+        && date.getUTCDate() === Number(day);
 }
 
 export const addBirthday = async (message) => {
@@ -72,7 +126,9 @@ export const addBirthday = async (message) => {
         match[2] = nameOfMonthsToNumber[match[2].toLowerCase()];
     } else match = message.content.match(numRegex);
 
-    const [, day, month, year] = match;
+    const [, rawDay, rawMonth, year] = match;
+    const day = rawDay.padStart(2, '0');
+    const month = rawMonth.padStart(2, '0');
 
     if (!isValidDate(day, month, year)) {
         message.reply('Fecha inválida. Por favor, verifica el día, mes y año.');

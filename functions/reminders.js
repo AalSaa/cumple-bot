@@ -1,6 +1,7 @@
 import { CronJob } from 'cron';
 import { readFileSync } from 'fs';
 import { getAllUsersWithBirthdayIsInSevenDays, getAllUsersWithBirthdayIsToday } from '../database/querys.js';
+import { updateHolidaysJSONIfOutdated } from './initializer.js';
 
 process.loadEnvFile();
 
@@ -8,6 +9,7 @@ const CHANNEL_ID = process.env.DISCORD_CHANNEL_ID;
 
 export const rememberTomorrowsHoliday = (client) => {
     new CronJob('0 0 0 * * *', async () => {
+        await updateHolidaysJSONIfOutdated();
         const holidays = JSON.parse(readFileSync('holidays.json'));
         const now = new Date();
         const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
@@ -23,6 +25,7 @@ export const rememberTomorrowsHoliday = (client) => {
 
 export const rememberTodaysHoliday = (client) => {
     new CronJob('0 0 0 * * *', async () => {
+        await updateHolidaysJSONIfOutdated();
         const holidays = JSON.parse(readFileSync('holidays.json'));
         const today = new Date().toISOString().split('T')[0];
         const todaysHolidays = holidays.filter(holiday => holiday.date === today);

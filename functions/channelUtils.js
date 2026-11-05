@@ -35,6 +35,10 @@ const sendWelcomeMessage = (channel) => {
                 value: 'Puedes ver tu cumpleaños y el de los demás usando el comando `!cumples`.'
             },
             {
+                name: '¿Como ver los próximos cumpleaños? ⏳',
+                value: 'Puedes ver los próximos cumpleaños y cuántos días faltan usando el comando `!proximos`.'
+            },
+            {
                 name: '¿Como ver los feriados? 📅',
                 value: 'Puedes ver los feriados usando el comando `!feriados`.'
             }

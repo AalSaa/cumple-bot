@@ -2,7 +2,7 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import './functions/initializer.js';
 import { analyzeAndSetupChannel } from './functions/channelUtils.js';
 import { rememberTomorrowsHoliday, rememberTodaysHoliday, rememberUserWithBirthdayIsInSevenDays, rememberUserWithBirthdayIsToday } from './functions/reminders.js';
-import { allBirthdays, addBirthday, deleteBirthday, allHolidays } from './functions/commands.js';
+import { allBirthdays, addBirthday, deleteBirthday, allHolidays, upcomingBirthdays } from './functions/commands.js';
 
 process.loadEnvFile();
 
@@ -30,6 +30,7 @@ client.on('messageCreate', message => {
     addBirthday(message);
     deleteBirthday(message);
     allHolidays(message);
+    upcomingBirthdays(message);
 });
 
 
