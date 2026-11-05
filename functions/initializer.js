@@ -12,14 +12,27 @@ const initializeDatabase = () => {
     ).run();
 }
 
-const isHolidaysJSONCreatedInCurrentYear = () => {
+// Birthdays saved without zero padding (e.g. 1990-3-5) are not valid SQLite dates, so strftime returns NULL.
+const normalizeBirthdays = () => {
+    const users = db.prepare('SELECT id, birthday FROM discord_user').all();
+    const updateBirthday = db.prepare('UPDATE discord_user SET birthday = ? WHERE id = ?');
+
+    for (const { id, birthday } of users) {
+        const [year, month, day] = birthday.split('-');
+        const normalizedBirthday = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        if (normalizedBirthday !== birthday) updateBirthday.run(normalizedBirthday, id);
+    }
+}
+
+// holidays.json only stores the holidays array, so its year comes from the dates themselves.
+const isHolidaysJSONFromCurrentYear = () => {
     const currentYear = new Date().getFullYear();
-    const holidaysData = JSON.parse(readFileSync('holidays.json', 'utf8'));
-    return holidaysData.year === currentYear;
+    const holidays = JSON.parse(readFileSync('holidays.json', 'utf8'));
+    return holidays.some(holiday => holiday.date.startsWith(`${currentYear}-`));
 };
 
-const initializeHolidaysJSON = async () => {
-    if (existsSync('holidays.json') && !(isHolidaysJSONCreatedInCurrentYear())) return;
+export const updateHolidaysJSONIfOutdated = async () => {
+    if (existsSync('holidays.json') && isHolidaysJSONFromCurrentYear()) return;
 
     try {
         const response = await axios.get('https://api.boostr.cl/holidays.json');
@@ -33,4 +46,5 @@ const initializeHolidaysJSON = async () => {
 };
 
 initializeDatabase();
-await initializeHolidaysJSON();
+normalizeBirthdays();
+await updateHolidaysJSONIfOutdated();
